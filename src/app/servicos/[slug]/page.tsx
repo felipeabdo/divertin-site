@@ -4,7 +4,13 @@ import { notFound } from "next/navigation";
 // 2. Importamos a nossa "tabela" de dados locais que criamos na aula passada
 import { SERVICOS_REAL } from "@/data/servicosData";
 
-export default async function DetalheServico({ params }) {
+interface PageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+export default async function DetalheServico({ params }: PageProps) {
   // 3. Pegamos o 'slug' (o texto da URL) que o usuário digitou
   const { slug } = await params;
 
