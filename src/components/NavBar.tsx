@@ -28,7 +28,6 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
     <div className="relative">
       
       {/* CONTAINER CONTROLADOR DE BOTÕES UNIFICADO */}
-      {/* Força ambos os botões a ocuparem exatamente o mesmo quadrado de pixel no topo direito */}
       <div className="fixed top-6 right-6 min-[1301px]:hidden w-12 h-12 flex items-center justify-center z-50">
         
         {/* Botão Hambúrguer (Visível apenas se fechado) */}
@@ -45,7 +44,6 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
         </button>
 
         {/* Botão de Fechar X (Visível apenas se aberto) */}
-        {/* Agora compartilha do mesmo pai flexível do hambúrguer, garantindo alinhamento central perfeito */}
         <button
           onClick={toggleMenu}
           className={`text-[#e6407d] focus:outline-none p-2 w-full h-full flex items-center justify-center ${isOpen ? 'block' : 'hidden'}`}
@@ -81,7 +79,13 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
           fixed top-0 right-0 h-screen w-screen bg-white z-40
           flex flex-col items-center justify-center gap-8 
           text-black font-medium text-[24px] min-[1301px]:hidden    
-          ${isOpen ? 'translate-x-0 transition-transform duration-300 ease-in-out' : 'translate-x-full'}
+          
+          /* AS MUDANÇAS ESTÃO AQUI: */
+          /* Deixamos as classes de transição estáticas e fixas para valerem nos dois sentidos */
+          transition-transform duration-300 ease-in-out
+          
+          /* Alternamos estritamente o posicionamento do eixo X baseado no estado */
+          ${isOpen ? 'translate-x-0' : 'translate-x-full'}
         `}
       >
         {/* Links da Gaveta */}
@@ -95,10 +99,9 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
             <Link
               href={link.href}              
               className="text-[var(--hover-color)] hover:opacity-80 transition-opacity duration-200 block py-3 font-bold"
-              >
+            >
               {link.label}
             </Link>
-
           </li>
         ))}
       </ul>
