@@ -27,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
         {/* 4. Scripts inseridos de forma otimizada antes do fechamento do body */}
         <GoogleAnalytics gaId="G-14VEB6PD4R" /> {/* Troque pelo seu ID real do Google */}
-        <MetaPixel />
+        {/* <MetaPixel /> */}
       </body>
     </html>
   );
