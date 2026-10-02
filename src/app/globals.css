@@ -1,26 +1,23 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 1. Aqui criamos a paleta lúdica da clínica 'usando a regra @theme do Tailwind */
+@theme {
+  --color-divertin-rosa: #f4a261; /* Tom pastel acolhedor principal */
+  --color-divertin-rosa-escuro: #D95F80; /* Tom rosa de botões */
+  --color-divertin-laranja-escuro: #fc5d00; /* Tom laranja escuro de botões */
+  --color-divertin-verde: #2a9d8f; /* Tom menta/'oliva suave para as áreas de saúde */
+  --color-divertin-azul: #4a90e2; /* Azul celeste lúdico */
+  --color-divertin-amarelo: #e9c46a; /* Amarelo suave divertido */
+  --color-divertin-fundo: #fdfbf7; /* Off-white bem quentinho e confortável para o fundo */
+
+  /* Registrando os apelidos das fontes de forma moderna */
+  --font-avenir: "Avenir", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* 2. Aplicamos configurações padrão para o corpo inteiro do site */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-divertin-fundo);
+  color: #333333; /* Texto num cinza bem escuro para facilitar a leitura sem agredir a vista */
 }
+

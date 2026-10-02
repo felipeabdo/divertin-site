@@ -1,69 +1,116 @@
-import Image from "next/image";
+import Link from 'next/link';
+import Botao from '@/components/Botao';
+import NavBar from '@/components/NavBar';
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="overflow-x-hidden min-h-screen bg-white">
+      {/* HERO SECTION */}
+      <section className="relative w-full min-h-[550px] md:min-h-[600px] lg:min-h-[920px] bg-[url(/bg-hero.png)] bg-cover bg-top bg-no-repeat pt-6 pb-20 flex flex-col justify-start items-start">
+        
+        {/* HEADER UNIFICADO */}
+        <header className="w-full px-6 flex justify-between items-center h-24 relative z-20 min-[1301px]:justify-center">
+          
+          {/* Logo Mobile / Tablet (< 1300px) */}
+          <div className="min-[1301px]:hidden mt-49">
+            <img src="/logo (1).png" alt="Logo Divertin" className="w-48 h-auto object-contain"/>
+          </div>
+
+          {/* Wrapper da NavBar */}
+          <div className="min-[1301px]:absolute min-[1301px]:left-1/2 min-[1301px]:-translate-x-1/2 min-[1301px]:top-8 ">
+            <NavBar />
+          </div>
+        </header>
+
+        {/* CONTEÚDO ALINHADO À ESQUERDA */}
+        {/* Adicionado pt-12 no mobile e md:pt-24 no tablet/notebook menor para centralizar verticalmente o bloco ao lado da menina */}
+        <div className="w-full px-6  flex flex-col items-start text-left pt-12 md:pt-24 min-[1301px]:pt-0 z-10 mt-25">
+          
+          {/* CONTÊINER RESPONSIVO DO TEXTO */}
+          <div className="w-full max-w-[250px] md:w-1/2 md:max-w-none lg:w-[45%] min-[1301px]:max-w-[500px] min-[1301px]:absolute min-[1301px]:top-15">
+            
+            {/* Logo Desktop integrada no fluxo dos textos */}
+            <img src="/logo (1).png" alt="Logo Divertin" className="w-48 lg:w-60 h-auto hidden min-[1301px]:block mb-6 object-contain"/>
+            
+            <h1 className="text-white font-black font-avenir leading-tight max-[640px]:w-40 text-[26px] sm:text-[32px] md:text-[36px] lg:text-[40px] min-[1301px]:text-[44px] min-[1301px]:w-120 mb-4">
+              <span className='text-[#F18B1F]'>"</span>Diversa em cuidado, única em conexão.<span className='text-[#F18B1F]'>"</span>
+            </h1>
+            
+            <p className='text-white font-semibold font-avenir leading-relaxed text-[16px] md:text-base lg:text-lg mb-6 min-[1301px]:w-120'>
+              Na Divertin, oferecemos atendimento personalizado em terapia infantil, com foco em comunicação, linguagem e desenvolvimento.
+            </p>
+            
+            <div className="w-full sm:w-auto">
+              <Botao cor="rosinha">
+                Quero agendar uma avaliação <img src="/arrow_forward.svg" alt="Seta do botão" className='inline ml-2'/>
+              </Botao>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* DIVISOR DE NUVEM SUPERIOR ANCORADO NO BOTTOM */}
+        <div className="absolute bottom-0 left-0 w-full h-[30px] md:h-[70px] translate-y-[50%] z-10">
+          <div className="w-full h-full bg-repeat-x bg-contain bg-bottom" style={{ backgroundImage: `url('/cloud (1).png')` }} aria-label="Divisor de seção" />
         </div>
-      </main>
+      </section>
+
+      {/* CONTEÚDO PRINCIPAL */}
+      <section className="w-full flex flex-col items-center px-6 py-12 max-w-7xl mx-auto gap-6 mt-6 md:mt-12">
+        {/* Bloco Jessica */}
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 w-full">
+          <img src="/Jessica.jpeg" alt="Jéssica Del Corso" className='w-full max-w-sm rounded-4xl h-auto object-cover shadow-md'/>
+          
+          <div className='flex flex-col items-center lg:items-start gap-6 text-center lg:text-left max-w-2xl'>
+            <h2 className='text-3xl md:text-4xl font-medium leading-tight text-gray-800'>
+              Seu filho apresenta dificuldades na fala, comunicação ou aprendizado?
+            </h2>
+            <p className='text-gray-600 text-base md:text-lg'>
+              Esses sinais podem indicar distúrbios de linguagem ou comunicação que precisam de atenção especializada. Quanto antes for iniciado o acompanhamento, maiores são as chances de sucesso.
+            </p>
+            <p className='font-semibold text-gray-800 text-base md:text-lg'>
+              Na Divertin, realizamos avaliação, diagnóstico e intervenção especializada, com abordagem lúdica, empática e eficiente.
+            </p>
+            <Botao cor='laranja_escuro'>
+              Quero agendar uma avaliação <img src="/arrow_forward.svg" alt="Seta do botão" className='inline ml-2'/>
+            </Botao>
+          </div>
+        </div>
+
+        {/* Grid de Cards de Recursos */}
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-8'>
+          <div className='flex flex-col items-center text-center p-4'>
+            <img src="/Group 1.svg" alt="Ícone avaliação" className='mb-6 h-20 w-auto'/>
+            <h3 className='font-bold text-lg mb-2 text-gray-800'>Avaliação e Atividades Personalizadas</h3>
+            <p className='text-gray-600 text-sm leading-relaxed'>Cada criança é única — por isso, criamos planos de desenvolvimento individualizados, com atividades lúdicas que estimulam linguagem, comunicação e socialização de forma divertida.</p>
+          </div>
+          
+          <div className='flex flex-col items-center text-center p-4'>
+            <img src="/Group 1 (1).svg" alt="Ícone desenvolvimento" className='mb-6 h-20 w-auto'/>
+            <h3 className='font-bold text-lg mb-2 text-gray-800'>Desenvolvimento na Primeira Infância</h3>
+            <p className='text-gray-600 text-sm leading-relaxed'>Nossa abordagem é focada nas fases iniciais da vida. Trabalhamos com estratégias que fortalecem a comunicação, o brincar e o aprendizado desde os primeiros anos.</p>
+          </div>
+          
+          <div className='flex flex-col items-center text-center p-4'>
+            <img src="/Group 1 (2).svg" alt="Ícone equipe" className='mb-6 h-20 w-auto'/>
+            <h3 className='font-bold text-lg mb-2 text-gray-800'>Equipe Especializada e Afetuosa</h3>
+            <p className='text-gray-600 text-sm leading-relaxed'>Contamos com profissionais experientes em distúrbios da comunicação infantil, oferecendo acolhimento, escuta ativa e um acompanhamento terapêutico de confiança.</p>
+          </div>
+        </div>
+      </section>
+     
+<footer 
+  className="w-full relative mt-12 bg-top bg-repeat-x flex flex-col justify-end pt-[120px] md:pt-[200px] pb-8 px-4" 
+  style={{ 
+    backgroundImage: `url('/cloud bottom.png')`, 
+    backgroundSize: '100% auto' 
+  }}
+>
+  <div className='w-full max-w-4xl mx-auto text-center font-medium text-xs md:text-sm text-gray-700 flex flex-col gap-2 relative z-10'>
+    <p>© 2026 DIVERTIN - SRTVS Quadra 701, Centro Empresarial Multiempresarial, Bloco O, Sala 203 - Asa Sul, Brasília - DF</p>
+    <p>CEP: 70340-000 - Telefone: (61) 99500-5162 - CNPJ: 35.602.615/0001-72</p>
+  </div>
+</footer>
+
     </div>
   );
 }
