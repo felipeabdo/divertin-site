@@ -98,18 +98,19 @@ export default function Home() {
         </div>
       </section>
      
-<footer 
-  className="w-full relative mt-12 bg-top bg-repeat-x flex flex-col justify-end pt-[120px] md:pt-[200px] pb-8 px-4" 
-  style={{ 
-    backgroundImage: `url('/cloud bottom.png')`, 
-    backgroundSize: '100% auto' 
-  }}
->
-  <div className='w-full max-w-4xl mx-auto text-center font-medium text-xs md:text-sm text-gray-700 flex flex-col gap-2 relative z-10'>
-    <p>© 2026 DIVERTIN - SRTVS Quadra 701, Centro Empresarial Multiempresarial, Bloco O, Sala 203 - Asa Sul, Brasília - DF</p>
-    <p>CEP: 70340-000 - Telefone: (61) 99500-5162 - CNPJ: 35.602.615/0001-72</p>
-  </div>
-</footer>
+      <footer 
+        className="w-full relative mt-12 bg-top bg-repeat-x flex flex-col justify-center items-center pt-[150px] md:pt-[240px] pb-20 px-6" 
+        style={{ 
+          backgroundImage: `url('/cloud bottom.png')`, 
+          backgroundSize: 'cover' 
+        }}
+      >
+        {/* A div de texto agora fica perfeitamente emoldurada no centro geométrico da nuvem */}
+        <div className='w-full max-w-4xl mx-auto text-center font-medium text-xs md:text-sm text-gray-700 flex flex-col gap-2 relative z-10 mb-20'>
+          <p>© 2026 DIVERTIN - SRTVS Quadra 701, Centro Empresarial Multiempresarial, Bloco O, Sala 203 - Asa Sul, Brasília - DF</p>
+          <p>CEP: 70340-000 - Telefone: (61) 99500-5162 - CNPJ: 35.602.615/0001-72</p>
+        </div>
+      </footer>
 
     </div>
   );
