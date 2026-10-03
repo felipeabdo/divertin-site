@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 type IconName = 'home' | 'face' | 'star' | 'chat';
 
@@ -32,12 +32,17 @@ const defaultLinks: NavLink[] = [
 /** Tempo máximo (ms) que o menu espera uma página carregar antes de fechar sozinho */
 const NAVIGATION_TIMEOUT = 10000;
 
-/** Distância vertical (px) entre o centro do X e o centro do hambúrguer (antigo "mt-18") */
-const HAM_Y = 36;
+/**
+ * Deslocamento vertical (px) do botão inteiro (hambúrguer + brilho + X).
+ * Os três ficam sempre exatamente no mesmo ponto; só este valor move o conjunto.
+ * 36 = a posição do seu hambúrguer original (antigo "mt-18").
+ * Use 0 para subir tudo para o topo do container.
+ */
+const BTN_OFFSET_Y = 36;
 
 /** Os 3 risquinhos: posição fechada (hambúrguer) e aberta (raios do brilho) */
 const bars = [0, 1, 2].map((i) => ({
-  closed: { x: 24, y: 24 + HAM_Y + (i - 1) * 8, a: 0 },
+  closed: { x: 24, y: 24 + (i - 1) * 8, a: 0 },
   open: [
     { x: 5.9, y: 9.8, a: 38 }, // raio de cima
     { x: 1, y: 24, a: 0 }, // raio do meio
@@ -47,6 +52,44 @@ const bars = [0, 1, 2].map((i) => ({
 
 /** Remove query, hash e barra final para comparar rotas */
 const normalizePath = (p: string) => p.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
+
+/* ------------------------------------------------------------------ */
+/* "Passagem de bastão" do menu entre páginas                          */
+/*                                                                     */
+/* Se o NavBar for desmontado e montado de novo na troca de rota       */
+/* (ex.: ele está dentro de cada página), o estado "aberto" se perderia */
+/* e o menu sumiria de uma vez. Para evitar isso, ao clicar num link   */
+/* guardamos um aviso no sessionStorage; o NavBar da página nova lê o  */
+/* aviso, já nasce aberto (sem animação) e então desliza para fechar.  */
+/* ------------------------------------------------------------------ */
+
+const HANDOFF_KEY = 'navbar-menu-handoff';
+
+const setHandoff = () => {
+  try {
+    sessionStorage.setItem(HANDOFF_KEY, String(Date.now()));
+  } catch {}
+};
+
+const clearHandoff = () => {
+  try {
+    sessionStorage.removeItem(HANDOFF_KEY);
+  } catch {}
+};
+
+/** Lê e apaga o aviso. Só vale se for recente. */
+const consumeHandoff = () => {
+  try {
+    const t = Number(sessionStorage.getItem(HANDOFF_KEY));
+    sessionStorage.removeItem(HANDOFF_KEY);
+    return !!t && Date.now() - t < NAVIGATION_TIMEOUT;
+  } catch {
+    return false;
+  }
+};
+
+// useLayoutEffect roda antes da pintura (sem "piscada"); no servidor usamos useEffect
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 /* ------------------------------------------------------------------ */
 /* Ícones (SVG em código)                                              */
@@ -192,43 +235,84 @@ function DrawerDecorations() {
 export default function NavBar({ links = defaultLinks }: NavBarProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  /** true = aplica o estado visual na hora, sem animar (usado só na passagem de bastão) */
+  const [instant, setInstant] = useState(false);
   /** href da página que está carregando (o menu fica aberto enquanto isso) */
   const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  const prevPathname = useRef(pathname);
+  const handoffChecked = useRef(false);
+  const handoffActive = useRef(false);
+
+  // PASSAGEM DE BASTÃO: este NavBar acabou de montar numa página nova logo
+  // depois de um clique no menu. Ele nasce aberto (idêntico ao menu da página
+  // anterior, sem animação) e, quando a página já está pronta, desliza para fechar.
+  useIsoLayoutEffect(() => {
+    if (!handoffChecked.current) {
+      handoffChecked.current = true;
+      handoffActive.current = consumeHandoff();
+    }
+    if (!handoffActive.current) return;
+
+    setInstant(true);
+    setIsOpen(true);
+
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        setInstant(false);
+        setIsOpen(false);
+      });
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, []);
+
+  const closeMenu = () => {
+    setIsOpen(false);
+    setPendingHref(null);
+    clearHandoff();
+  };
 
   const toggleMenu = () => {
     setIsOpen((open) => !open);
     setPendingHref(null);
+    clearHandoff();
   };
 
   // Clique num link do menu:
   // - mesma página: fecha o menu na hora
-  // - outra página: mantém o menu aberto até a rota mudar (veja o efeito abaixo)
+  // - outra página: mantém o menu aberto até a rota mudar
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     // cliques com ctrl/cmd/shift (nova aba/janela) não devem prender o menu
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
 
     if (normalizePath(href) === normalizePath(pathname)) {
-      setIsOpen(false);
-      setPendingHref(null);
+      closeMenu();
       return;
     }
     setPendingHref(href);
+    setHandoff();
   };
 
-  // A nova página terminou de carregar (a rota mudou): o menu desliza de volta
+  // A rota mudou e este NavBar continua montado (ex.: está no layout):
+  // a nova página já carregou, então o menu desliza de volta.
+  // (Na montagem inicial não faz nada, para não atropelar a passagem de bastão.)
   useEffect(() => {
-    setIsOpen(false);
-    setPendingHref(null);
+    if (prevPathname.current === pathname) return;
+    prevPathname.current = pathname;
+    closeMenu();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   // Segurança: se a navegação demorar demais ou falhar, o menu não fica preso
   useEffect(() => {
     if (!pendingHref) return;
-    const t = setTimeout(() => {
-      setIsOpen(false);
-      setPendingHref(null);
-    }, NAVIGATION_TIMEOUT);
+    const t = setTimeout(closeMenu, NAVIGATION_TIMEOUT);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingHref]);
 
   // Trava o scroll do body e permite fechar com ESC
@@ -237,21 +321,19 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsOpen(false);
-        setPendingHref(null);
-      }
+      if (e.key === 'Escape') closeMenu();
     };
     window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prev;
       window.removeEventListener('keydown', onKey);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   return (
     <div className="relative">
-      {/* BOTÃO ÚNICO ANIMADO: hambúrguer -> brilho -> X */}
+      {/* BOTÃO ÚNICO ANIMADO: hambúrguer -> brilho -> X (todos no mesmo ponto) */}
       <style>{`
         @keyframes navx-glow {
           0%   { transform: scale(.2); opacity: 0; }
@@ -275,75 +357,78 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
               </radialGradient>
             </defs>
 
-            {/* área de clique do hambúrguer (que fica mais abaixo) */}
-            <rect
-              x="8"
-              y={24 + HAM_Y - 18}
-              width="32"
-              height="36"
-              fill="transparent"
-              style={{ display: isOpen ? 'none' : 'block' }}
-            />
+            {/* Tudo dentro deste grupo compartilha o mesmo centro (24, 24) */}
+            <g transform={`translate(0 ${BTN_OFFSET_Y})`}>
+              {/* área de clique */}
+              <rect x="8" y="6" width="32" height="36" fill="transparent" />
 
-            {/* clarão que ilumina o X */}
-            <circle
-              cx="24"
-              cy="24"
-              r="20"
-              fill="url(#navx-glow-grad)"
-              style={{
-                transformOrigin: '24px 24px',
-                opacity: 0,
-                animation: isOpen ? 'navx-glow 800ms ease-out 280ms both' : 'none',
-              }}
-            />
+              {/* clarão que ilumina o X */}
+              <circle
+                cx="24"
+                cy="24"
+                r="20"
+                fill="url(#navx-glow-grad)"
+                style={{
+                  transformOrigin: '24px 24px',
+                  opacity: 0,
+                  animation:
+                    isOpen && !instant ? 'navx-glow 800ms ease-out 280ms both' : 'none',
+                }}
+              />
 
-            {/* X que fecha o menu */}
-            <g
-              stroke="#e6007e"
-              strokeWidth="4"
-              strokeLinecap="round"
-              style={{
-                transformOrigin: '24px 24px',
-                transform: isOpen ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-120deg)',
-                opacity: isOpen ? 1 : 0,
-                transition: isOpen
-                  ? 'transform 550ms cubic-bezier(.34,1.56,.64,1) 280ms, opacity 150ms ease 280ms'
-                  : 'transform 200ms ease-in, opacity 150ms ease',
-              }}
-            >
-              <path d="M16 16 32 32M32 16 16 32" />
-            </g>
+              {/* X que fecha o menu */}
+              <g
+                stroke="#e6007e"
+                strokeWidth="4"
+                strokeLinecap="round"
+                style={{
+                  transformOrigin: '24px 24px',
+                  transform: isOpen ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-120deg)',
+                  opacity: isOpen ? 1 : 0,
+                  transition: instant
+                    ? 'none'
+                    : isOpen
+                      ? 'transform 550ms cubic-bezier(.34,1.56,.64,1) 280ms, opacity 150ms ease 280ms'
+                      : 'transform 200ms ease-in, opacity 150ms ease',
+                }}
+              >
+                <path d="M16 16 32 32M32 16 16 32" />
+              </g>
 
-            {/* 3 risquinhos: viram o brilho */}
-            {bars.map((b, i) => {
-              const p = isOpen ? b.open : b.closed;
-              const delay = isOpen ? i * 60 : (2 - i) * 40;
-              return (
-                <g
-                  key={i}
-                  style={{
-                    transform: `translate(${p.x}px, ${p.y}px) rotate(${p.a}deg)`,
-                    transition: `transform 450ms cubic-bezier(.65,0,.35,1) ${delay}ms`,
-                  }}
-                >
-                  <line
-                    x1="-11"
-                    y1="0"
-                    x2="11"
-                    y2="0"
-                    strokeWidth="4"
-                    strokeLinecap="round"
+              {/* 3 risquinhos: viram o brilho */}
+              {bars.map((b, i) => {
+                const p = isOpen ? b.open : b.closed;
+                const delay = isOpen ? i * 60 : (2 - i) * 40;
+                return (
+                  <g
+                    key={i}
                     style={{
-                      stroke: isOpen ? '#ffc34d' : '#e6407d',
-                      strokeDasharray: isOpen ? '8 22' : '22 22',
-                      strokeDashoffset: isOpen ? -7 : 0,
-                      transition: `stroke 400ms ease ${delay}ms, stroke-dasharray 450ms ease ${delay}ms, stroke-dashoffset 450ms ease ${delay}ms`,
+                      transform: `translate(${p.x}px, ${p.y}px) rotate(${p.a}deg)`,
+                      transition: instant
+                        ? 'none'
+                        : `transform 450ms cubic-bezier(.65,0,.35,1) ${delay}ms`,
                     }}
-                  />
-                </g>
-              );
-            })}
+                  >
+                    <line
+                      x1="-11"
+                      y1="0"
+                      x2="11"
+                      y2="0"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      style={{
+                        stroke: isOpen ? '#ffc34d' : '#e6407d',
+                        strokeDasharray: isOpen ? '8 22' : '22 22',
+                        strokeDashoffset: isOpen ? -7 : 0,
+                        transition: instant
+                          ? 'none'
+                          : `stroke 400ms ease ${delay}ms, stroke-dasharray 450ms ease ${delay}ms, stroke-dashoffset 450ms ease ${delay}ms`,
+                      }}
+                    />
+                  </g>
+                );
+              })}
+            </g>
           </svg>
         </button>
       </div>
@@ -379,6 +464,8 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
           backgroundColor: '#faf8f4',
           // Altura da pílula: acompanha largura E altura da tela
           ['--pill-h' as string]: 'clamp(52px, min(15.7vw, 11.5vh), 112px)',
+          // Na passagem de bastão a gaveta já nasce aberta, sem animar
+          transition: instant ? 'none' : undefined,
         }}
       >
         <DrawerDecorations />
