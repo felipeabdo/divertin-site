@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type IconName = 'home' | 'face' | 'star' | 'chat';
@@ -27,6 +28,25 @@ const defaultLinks: NavLink[] = [
   { label: 'ESPECIALIDADES', href: '/servicos', hoverColor: '#65bf9d', icon: 'star', bg: '#cbebdd', accent: '#3dbd8a' },
   { label: 'CONTATO', href: '/contato', hoverColor: '#b7db00', icon: 'chat', bg: '#ebdcf4', accent: '#9b63b8' },
 ];
+
+/** Tempo máximo (ms) que o menu espera uma página carregar antes de fechar sozinho */
+const NAVIGATION_TIMEOUT = 10000;
+
+/** Distância vertical (px) entre o centro do X e o centro do hambúrguer (antigo "mt-18") */
+const HAM_Y = 36;
+
+/** Os 3 risquinhos: posição fechada (hambúrguer) e aberta (raios do brilho) */
+const bars = [0, 1, 2].map((i) => ({
+  closed: { x: 24, y: 24 + HAM_Y + (i - 1) * 8, a: 0 },
+  open: [
+    { x: 5.9, y: 9.8, a: 38 }, // raio de cima
+    { x: 1, y: 24, a: 0 }, // raio do meio
+    { x: 5.9, y: 38.2, a: -38 }, // raio de baixo
+  ][i],
+}));
+
+/** Remove query, hash e barra final para comparar rotas */
+const normalizePath = (p: string) => p.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
 
 /* ------------------------------------------------------------------ */
 /* Ícones (SVG em código)                                              */
@@ -170,15 +190,58 @@ function DrawerDecorations() {
 /* ------------------------------------------------------------------ */
 
 export default function NavBar({ links = defaultLinks }: NavBarProps) {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const toggleMenu = () => setIsOpen(!isOpen);
+  /** href da página que está carregando (o menu fica aberto enquanto isso) */
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  const toggleMenu = () => {
+    setIsOpen((open) => !open);
+    setPendingHref(null);
+  };
+
+  // Clique num link do menu:
+  // - mesma página: fecha o menu na hora
+  // - outra página: mantém o menu aberto até a rota mudar (veja o efeito abaixo)
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // cliques com ctrl/cmd/shift (nova aba/janela) não devem prender o menu
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+
+    if (normalizePath(href) === normalizePath(pathname)) {
+      setIsOpen(false);
+      setPendingHref(null);
+      return;
+    }
+    setPendingHref(href);
+  };
+
+  // A nova página terminou de carregar (a rota mudou): o menu desliza de volta
+  useEffect(() => {
+    setIsOpen(false);
+    setPendingHref(null);
+  }, [pathname]);
+
+  // Segurança: se a navegação demorar demais ou falhar, o menu não fica preso
+  useEffect(() => {
+    if (!pendingHref) return;
+    const t = setTimeout(() => {
+      setIsOpen(false);
+      setPendingHref(null);
+    }, NAVIGATION_TIMEOUT);
+    return () => clearTimeout(t);
+  }, [pendingHref]);
 
   // Trava o scroll do body e permite fechar com ESC
   useEffect(() => {
     if (!isOpen) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+        setPendingHref(null);
+      }
+    };
     window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prev;
@@ -188,31 +251,99 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
 
   return (
     <div className="relative">
-      {/* CONTAINER CONTROLADOR DE BOTÕES UNIFICADO */}
+      {/* BOTÃO ÚNICO ANIMADO: hambúrguer -> brilho -> X */}
+      <style>{`
+        @keyframes navx-glow {
+          0%   { transform: scale(.2); opacity: 0; }
+          40%  { transform: scale(1.35); opacity: .95; }
+          100% { transform: scale(1); opacity: 0; }
+        }
+      `}</style>
+
       <div className="fixed top-6 right-6 min-[1301px]:hidden w-12 h-12 flex items-center justify-center z-50">
-        {/* Botão Hambúrguer (Visível apenas se fechado) */}
         <button
           onClick={toggleMenu}
-          className={`text-black focus:outline-none p-2 w-full h-full flex items-center justify-center ${isOpen ? 'hidden' : 'block'}`}
-          aria-label="Abrir menu"
+          className="w-full h-full focus:outline-none"
+          aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
           aria-expanded={isOpen}
         >
-          <svg className="w-8 h-8 mt-18" fill="none" strokeWidth="3" viewBox="0 0 24 24">
-            <path strokeLinecap="round" d="M4 6h16" className="stroke-[#e6407d] min-[1301px]:stroke-white" />
-            <path strokeLinecap="round" d="M4 12h16" className="stroke-[#e6407d] min-[1301px]:stroke-white" />
-            <path strokeLinecap="round" d="M4 18h16" className="stroke-[#e6407d] min-[1301px]:stroke-white" />
-          </svg>
-        </button>
+          <svg viewBox="0 0 48 48" className="w-full h-full overflow-visible" fill="none">
+            <defs>
+              <radialGradient id="navx-glow-grad">
+                <stop offset="0%" stopColor="#ffd45e" stopOpacity="0.95" />
+                <stop offset="100%" stopColor="#ffd45e" stopOpacity="0" />
+              </radialGradient>
+            </defs>
 
-        {/* Botão de Fechar X (Visível apenas se aberto) */}
-        <button
-          onClick={toggleMenu}
-          className={`text-[#e6007e] focus:outline-none p-2 w-full h-full flex items-center justify-center ${isOpen ? 'block' : 'hidden'}`}
-          aria-label="Fechar menu"
-        >
-          {/* sem mt-18: o X fica no topo direito, como no design */}
-          <svg className="w-8 h-8 mt-18" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            {/* área de clique do hambúrguer (que fica mais abaixo) */}
+            <rect
+              x="8"
+              y={24 + HAM_Y - 18}
+              width="32"
+              height="36"
+              fill="transparent"
+              style={{ display: isOpen ? 'none' : 'block' }}
+            />
+
+            {/* clarão que ilumina o X */}
+            <circle
+              cx="24"
+              cy="24"
+              r="20"
+              fill="url(#navx-glow-grad)"
+              style={{
+                transformOrigin: '24px 24px',
+                opacity: 0,
+                animation: isOpen ? 'navx-glow 800ms ease-out 280ms both' : 'none',
+              }}
+            />
+
+            {/* X que fecha o menu */}
+            <g
+              stroke="#e6007e"
+              strokeWidth="4"
+              strokeLinecap="round"
+              style={{
+                transformOrigin: '24px 24px',
+                transform: isOpen ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-120deg)',
+                opacity: isOpen ? 1 : 0,
+                transition: isOpen
+                  ? 'transform 550ms cubic-bezier(.34,1.56,.64,1) 280ms, opacity 150ms ease 280ms'
+                  : 'transform 200ms ease-in, opacity 150ms ease',
+              }}
+            >
+              <path d="M16 16 32 32M32 16 16 32" />
+            </g>
+
+            {/* 3 risquinhos: viram o brilho */}
+            {bars.map((b, i) => {
+              const p = isOpen ? b.open : b.closed;
+              const delay = isOpen ? i * 60 : (2 - i) * 40;
+              return (
+                <g
+                  key={i}
+                  style={{
+                    transform: `translate(${p.x}px, ${p.y}px) rotate(${p.a}deg)`,
+                    transition: `transform 450ms cubic-bezier(.65,0,.35,1) ${delay}ms`,
+                  }}
+                >
+                  <line
+                    x1="-11"
+                    y1="0"
+                    x2="11"
+                    y2="0"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    style={{
+                      stroke: isOpen ? '#ffc34d' : '#e6407d',
+                      strokeDasharray: isOpen ? '8 22' : '22 22',
+                      strokeDashoffset: isOpen ? -7 : 0,
+                      transition: `stroke 400ms ease ${delay}ms, stroke-dasharray 450ms ease ${delay}ms, stroke-dashoffset 450ms ease ${delay}ms`,
+                    }}
+                  />
+                </g>
+              );
+            })}
           </svg>
         </button>
       </div>
@@ -241,13 +372,12 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
         className={`
           fixed inset-0 z-40 min-[1301px]:hidden
           overflow-y-auto overflow-x-hidden
-          transition-[translate, transform,visibility] duration-300 ease-in-out
+          transition-[translate,transform,visibility] duration-300 ease-in-out
           ${isOpen ? 'translate-x-0 visible' : 'translate-x-full invisible'}
         `}
         style={{
           backgroundColor: '#faf8f4',
           // Altura da pílula: acompanha largura E altura da tela
-          // (≈15.7vw no design; limitada por 11.5vh para caber em telas baixas)
           ['--pill-h' as string]: 'clamp(52px, min(15.7vw, 11.5vh), 112px)',
         }}
       >
@@ -265,11 +395,13 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
             {links.map((link, index) => {
               const accent = link.accent ?? link.hoverColor;
               const bg = link.bg ?? '#f3f3f3';
+              const isPending = pendingHref === link.href;
               return (
-                <li key={`mob-${index}`} onClick={() => setIsOpen(false)}>
+                <li key={`mob-${index}`}>
                   <Link
                     href={link.href}
-                    className="flex items-center rounded-full transition-transform duration-150 active:scale-[0.98] hover:brightness-[0.98]"
+                    onClick={(e) => handleLinkClick(e, link.href)}
+                    className="flex items-center rounded-full transition-[transform,filter,opacity] duration-150 active:scale-[0.98] hover:brightness-[0.98]"
                     style={{
                       height: 'var(--pill-h)',
                       backgroundColor: bg,
@@ -277,6 +409,7 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
                       paddingRight: 'calc(var(--pill-h) * 0.3)',
                       gap: 'calc(var(--pill-h) * 0.26)',
                       color: '#1f2a37',
+                      opacity: pendingHref && !isPending ? 0.6 : 1,
                     }}
                   >
                     {/* Círculo com ícone */}
@@ -308,9 +441,9 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
                       </span>
                     </span>
 
-                    {/* Seta */}
+                    {/* Seta (pulsa enquanto a página carrega) */}
                     <span
-                      className="shrink-0"
+                      className={`shrink-0 ${isPending ? 'animate-pulse' : ''}`}
                       style={{
                         width: 'calc(var(--pill-h) * 0.26)',
                         height: 'calc(var(--pill-h) * 0.26)',
