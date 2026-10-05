@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import PageLoader from "@/components/PageLoader";
+import ScreenSaver from "@/components/ScreenSaver";
 import { GoogleAnalytics } from "@next/third-parties/google"; 
 // import MetaPixel from "../components/MetaPixel";
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       */}
       <body className="min-h-full flex flex-col">
         <PageLoader src="/loading.gif" width={180} />
+        <ScreenSaver src="/descanso.gif" idleMinutes={0.1} width={220} />
         {children}
 
         {/* 4. Scripts inseridos de forma otimizada antes do fechamento do body */}
