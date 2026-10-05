@@ -19,7 +19,7 @@ interface BotaoProps {
 
 export default function Botao({ children, cor = "rosa" }: BotaoProps) {
   // 3. A estrutura base do layout que NUNCA muda (paddings, arredondamento, sombras, clique)
-  const estiloBase = "w-[300px] px-6 py-6 font-bold rounded-full active:scale-95 transition-all text-left cursor-pointer shadow-sm flex justify-between md:px-6 md:py-6   ";
+  const estiloBase = "max-w-[300px] px-6 py-6 font-bold rounded-full active:scale-95 transition-all text-left cursor-pointer shadow-sm flex justify-between md:px-6 md:py-6   ";
 
   // 4. Buscamos as classes de cor específicas baseadas na Prop que foi passada.
   // Se o desenvolvedor não passar nada, o sistema usa "rosa" como padrão (default).
