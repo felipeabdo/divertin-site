@@ -2,12 +2,12 @@ import Link from 'next/link';
 import Botao from '@/components/Botao';
 import NavBar from '@/components/NavBar';
 
-export default function NovaPagina() {
+export default function QuemSomos() {
   return (
     <div className="overflow-x-hidden min-h-screen bg-white flex flex-col justify-between">
       
       {/* HEADER / NAVBAR (Ajustado para mostrar a logo no Desktop e no Mobile) */}
-      <header className="w-full px-6 flex justify-between items-center h-24 relative z-20 min-[1301px]:justify-center">
+      <header className="w-full h-150 px-6 flex justify-between items-center h-24 relative z-20 min-[1301px]:justify-center">
         
         {/* Logo Mobile / Tablet (< 1300px) */}
         <div className="min-[1301px]:hidden mt-49">
@@ -26,11 +26,11 @@ export default function NovaPagina() {
       </header>
 
       {/* CONTEÚDO DA PÁGINA (4 Seções vazias prontas para uso) */}
-      <main className="w-full flex-grow">
+      <main className="w-full flex flex-col items-center justify-center">
         
         {/* SEÇÃO 1 */}
-        <section className="w-full max-w-7xl mx-auto px-6 py-12">
-          {/* Insira seu conteúdo aqui */}
+        <section className="w-full flex flex-col justify-center">
+
         </section>
 
         {/* SEÇÃO 2 */}
