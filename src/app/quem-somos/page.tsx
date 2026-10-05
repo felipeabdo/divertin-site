@@ -11,20 +11,26 @@ export const metadata: Metadata = { title: 'Quem Somos | Divertin' };
  * 2) Abaixo, escreva o caminho começando por "/" e SEM a palavra "public": '/equipe/ana.jpg'.
  * Campo vazio (undefined) = aparece o placeholder colorido.
  *
- * Equipe:  ana, rafaela, camila  (ordem dos cards, da esquerda para a direita)
+ * Equipe:  ana, rafaela, fernanda  (ordem dos cards, da esquerda para a direita)
  * Clínica: clinicaGrande = foto larga da esquerda
  *          clinica1 = topo esquerdo | clinica2 = topo direito
  *          clinica3 = baixo esquerdo | clinica4 = baixo direito
  */
+/**
+ * true  = os PNGs card_*.png já são o card completo (foto + nome + cargo): a imagem é exibida sozinha.
+ * false = os PNGs são só a foto da profissional: o nome e o cargo são escritos pela página.
+ */
+const CARD_JA_TEM_NOME = true;
+
 const IMG: Record<string, string | undefined> = {
-  ana: undefined,
-  rafaela: undefined,
-  camila: undefined, // sem foto = usa a ilustração
-  clinicaGrande: undefined,
-  clinica1: undefined,
-  clinica2: undefined,
-  clinica3: undefined,
-  clinica4: undefined,
+  ana: '/card_ana.png',
+  rafaela: '/card_rafaela.png',
+  fernanda: '/card_fernanda.png',
+  clinicaGrande: '/img1.png',
+  clinica1: '/img2.png',
+  clinica2: '/img3.png',
+  clinica3: '/img4.png',
+  clinica4: '/img5.png',
 };
 
 /**
@@ -137,7 +143,7 @@ export default function QuemSomosPage() {
   const team = [
     { name: 'Ana Luiza', src: IMG.ana, tone: PAL.pinkSoft, icon: '🦖', accent: PAL.pink },
     { name: 'Rafaela', src: IMG.rafaela, tone: PAL.greenSoft, icon: '🦖', accent: PAL.green },
-    { name: 'Camila Souza', src: IMG.camila, tone: PAL.orangeSoft, icon: '', accent: PAL.orange },
+    { name: 'Fernanda Lima', src: IMG.fernanda, tone: PAL.orangeSoft, icon: '', accent: PAL.orange },
   ];
 
   const gallery = [
@@ -253,7 +259,11 @@ export default function QuemSomosPage() {
         <div className="relative mt-10 grid gap-8 sm:grid-cols-3">
           <Dashes color={PAL.orange} className="-left-10 top-[40%] hidden xl:block" size={42} rotate={-15} />
           <Dashes color={PAL.orange} className="-right-10 top-[36%] hidden xl:block" size={42} rotate={165} />
-          {team.map((m) => (
+          {team.map((m) => (m.src && CARD_JA_TEM_NOME) ? (
+            <article key={m.name}>
+              <img src={m.src} alt={`${m.name}, fonoaudióloga`} className="h-auto w-full" />
+            </article>
+          ) : (
             <article key={m.name}>
               <div className="relative h-[210px] overflow-hidden" style={{ borderRadius: '2rem 2rem 0 0', background: `linear-gradient(135deg, ${m.tone}, #fff)` }}>
                 {m.src
