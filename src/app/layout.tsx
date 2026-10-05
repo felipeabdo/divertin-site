@@ -26,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       */}
       <body className="min-h-full flex flex-col">
         <PageLoader src="/loading.gif" width={180} />
-        <ScreenSaver src="/descanso.gif" idleMinutes={0.1} width={220} />
+        <ScreenSaver src="/descanso.gif" idleMinutes={0.5} width={220} />
         {children}
 
         {/* 4. Scripts inseridos de forma otimizada antes do fechamento do body */}
