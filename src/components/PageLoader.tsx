@@ -121,13 +121,25 @@ export default function PageLoader({
     };
   }, [minDuration, fadeDuration, maxDuration]);
 
-  // Trava a rolagem enquanto o loading está na tela
+  // Impede a rolagem enquanto o loading está na tela.
+  // IMPORTANTE: NÃO usamos "overflow: hidden" no body/html. Isso esconde a barra de
+  // rolagem e, quando o loading sai, ela volta e a página inteira "se ajeita" (a largura
+  // útil muda ~15px no desktop). Aqui só bloqueamos os gestos, sem mexer na barra.
   useEffect(() => {
     if (!visible) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const block = (e: Event) => e.preventDefault();
+    const blockKeys = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('wheel', block, { passive: false });
+    window.addEventListener('touchmove', block, { passive: false });
+    window.addEventListener('keydown', blockKeys);
     return () => {
-      document.body.style.overflow = previous;
+      window.removeEventListener('wheel', block);
+      window.removeEventListener('touchmove', block);
+      window.removeEventListener('keydown', blockKeys);
     };
   }, [visible]);
 
