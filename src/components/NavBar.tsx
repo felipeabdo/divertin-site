@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 type IconName = 'home' | 'face' | 'star' | 'chat';
 
@@ -40,6 +41,14 @@ const NAVIGATION_TIMEOUT = 10000;
  */
 const BTN_OFFSET_Y = 36;
 
+/** Quanto o pincel "sobra" para cada lado do texto (px) */
+const BRUSH_OVERHANG = 6;
+
+/** Rolagem (px) a partir da qual a barra fixa do desktop aparece */
+const SCROLL_SHOW_AT = 60;
+/** Rolagem (px) abaixo da qual a barra fixa some (quase no topo) */
+const SCROLL_HIDE_AT = 10;
+
 /** Os 3 risquinhos: posição fechada (hambúrguer) e aberta (raios do brilho) */
 const bars = [0, 1, 2].map((i) => ({
   closed: { x: 24, y: 24 + (i - 1) * 8, a: 0 },
@@ -52,6 +61,13 @@ const bars = [0, 1, 2].map((i) => ({
 
 /** Remove query, hash e barra final para comparar rotas */
 const normalizePath = (p: string) => p.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
+
+/** Verifica se o link corresponde à rota atual (a Home só casa exatamente) */
+const isActiveRoute = (href: string, pathname: string) => {
+  const h = normalizePath(href);
+  const p = normalizePath(pathname);
+  return h === '/' ? p === '/' : p === h || p.startsWith(h + '/');
+};
 
 /* ------------------------------------------------------------------ */
 /* "Passagem de bastão" do menu entre páginas                          */
@@ -229,6 +245,116 @@ function DrawerDecorations() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Menu desktop (links + pincel). Usado na posição original e na barra */
+/* fixa que aparece ao rolar; cada instância tem o próprio pincel.     */
+/* ------------------------------------------------------------------ */
+
+interface DesktopMenuProps {
+  links: NavLink[];
+  pathname: string;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+function DesktopMenu({ links, pathname, className = '', style }: DesktopMenuProps) {
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [brushRect, setBrushRect] = useState<{ left: number; top: number; width: number } | null>(
+    null,
+  );
+  /** só anima depois da primeira posição, para o pincel não "voar" ao carregar */
+  const [brushAnimated, setBrushAnimated] = useState(false);
+
+  const activeIndex = links.findIndex((l) => isActiveRoute(l.href, pathname));
+  // o pincel vai para o item em hover; sem hover, volta para a página ativa
+  const targetIndex = hoveredIndex ?? (activeIndex >= 0 ? activeIndex : null);
+
+  useIsoLayoutEffect(() => {
+    const measure = () => {
+      const el = targetIndex !== null ? itemRefs.current[targetIndex] : null;
+      if (!el) return;
+      setBrushRect({
+        left: el.offsetLeft - BRUSH_OVERHANG,
+        // logo abaixo do texto (funciona com ou sem padding no container)
+        top: el.offsetTop + el.offsetHeight - 1,
+        width: el.offsetWidth + BRUSH_OVERHANG * 2,
+      });
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    // recalcula quando a fonte customizada termina de carregar (muda a largura do texto)
+    document.fonts?.ready.then(measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [targetIndex, links]);
+
+  useEffect(() => {
+    if (!brushRect || brushAnimated) return;
+    const id = requestAnimationFrame(() => setBrushAnimated(true));
+    return () => cancelAnimationFrame(id);
+  }, [brushRect, brushAnimated]);
+
+  return (
+    <ul className={`relative ${className}`} style={style} onMouseLeave={() => setHoveredIndex(null)}>
+      {/* Traço de pincel que desliza entre os itens */}
+      {brushRect && targetIndex !== null && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute"
+          style={{
+            left: 0,
+            top: brushRect.top,
+            width: brushRect.width,
+            height: 10,
+            transform: `translateX(${brushRect.left}px)`,
+            color: links[targetIndex].hoverColor,
+            transition: brushAnimated
+              ? 'transform 550ms cubic-bezier(.34,1.56,.64,1), width 550ms cubic-bezier(.34,1.56,.64,1), color 400ms ease'
+              : 'none',
+          }}
+        >
+          {/* a key reinicia o "rabisco" a cada troca de item */}
+          <svg
+            key={targetIndex}
+            viewBox="0 0 100 12"
+            preserveAspectRatio="none"
+            className="block w-full h-full"
+            style={{
+              transformOrigin: 'center',
+              animation: brushAnimated ? 'brush-wobble 550ms ease-out' : 'none',
+            }}
+          >
+            <path
+              fill="currentColor"
+              d="M1 7C6 3 22 8 40 5.5S72 3 88 5.5C95 6.5 99 6 99 7.5C98 10.5 82 9 62 10S22 11.5 5 10.2C1.5 9.6 0 8.4 1 7Z"
+            />
+          </svg>
+        </span>
+      )}
+
+      {links.map((link, index) => (
+        <li
+          key={`desk-${index}`}
+          ref={(el) => {
+            itemRefs.current[index] = el;
+          }}
+          className="w-auto"
+          onMouseEnter={() => setHoveredIndex(index)}
+        >
+          <Link
+            href={link.href}
+            onFocus={() => setHoveredIndex(index)}
+            onBlur={() => setHoveredIndex(null)}
+            className="block py-0"
+          >
+            {link.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* NavBar                                                              */
 /* ------------------------------------------------------------------ */
 
@@ -243,6 +369,24 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
   const prevPathname = useRef(pathname);
   const handoffChecked = useRef(false);
   const handoffActive = useRef(false);
+
+  /* ---------- Barra fixa do desktop ---------- */
+  /** true = página rolada: a barra fixa com fundo aparece */
+  const [scrolled, setScrolled] = useState(false);
+  /** o portal só existe no navegador (evita erro de hidratação) */
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const update = () => {
+      const y = window.scrollY;
+      // histerese: aparece depois de SCROLL_SHOW_AT, só some perto do topo
+      setScrolled((prev) => (prev ? y > SCROLL_HIDE_AT : y > SCROLL_SHOW_AT));
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
+  }, []);
 
   // PASSAGEM DE BASTÃO: este NavBar acabou de montar numa página nova logo
   // depois de um clique no menu. Ele nasce aberto (idêntico ao menu da página
@@ -355,10 +499,49 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
                 <stop offset="0%" stopColor="#ffd45e" stopOpacity="0.95" />
                 <stop offset="100%" stopColor="#ffd45e" stopOpacity="0" />
               </radialGradient>
+              <filter id="navx-badge-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="3" stdDeviation="3.5" floodColor="#5a1f45" floodOpacity="0.28" />
+              </filter>
             </defs>
 
             {/* Tudo dentro deste grupo compartilha o mesmo centro (24, 24) */}
             <g transform={`translate(0 ${BTN_OFFSET_Y})`}>
+              {/* MOLDURA do hambúrguer (só com o menu fechado): botão branco com borda rosa
+                  e traços amarelos. Ao abrir, "estoura" e vira o brilho; ao fechar, volta com um quique. */}
+              <g
+                style={{
+                  transformOrigin: '24px 24px',
+                  transform: isOpen ? 'scale(1.35) rotate(50deg)' : 'scale(1) rotate(0deg)',
+                  opacity: isOpen ? 0 : 1,
+                  transition: instant
+                    ? 'none'
+                    : isOpen
+                      ? 'transform 350ms ease-in, opacity 250ms ease-in'
+                      : 'transform 450ms cubic-bezier(.34,1.56,.64,1) 150ms, opacity 200ms ease 150ms',
+                }}
+              >
+                <circle
+                  cx="24"
+                  cy="24"
+                  r="27"
+                  fill="#fff"
+                  stroke="#fbdcea"
+                  strokeWidth="3"
+                  filter="url(#navx-badge-shadow)"
+                />
+                <circle
+                  cx="24"
+                  cy="24"
+                  r="33.5"
+                  fill="none"
+                  stroke="#ffc34d"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  pathLength={100}
+                  strokeDasharray="3 7"
+                />
+              </g>
+
               {/* área de clique */}
               <rect x="8" y="6" width="32" height="36" fill="transparent" />
 
@@ -433,23 +616,79 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
         </button>
       </div>
 
-      {/* 1. CONTAINER EXCLUSIVO DESKTOP (> 1300px) */}
-      <ul className="hidden min-[1301px]:flex min-[1301px]:flex-row min-[1301px]:gap-10 min-[1301px]:font-black min-[1301px]:text-[20px] text-white">
-        {links.map((link, index) => (
-          <li
-            key={`desk-${index}`}
-            style={{ '--hover-color': link.hoverColor } as React.CSSProperties}
-            className="w-auto"
+      {/* 1. MENU DESKTOP (> 1300px) */}
+      <style>{`
+        @keyframes brush-wobble {
+          0%   { transform: scaleY(.55) skewX(-14deg); }
+          45%  { transform: scaleY(1.5) skewX(8deg); }
+          75%  { transform: scaleY(.9) skewX(-3deg); }
+          100% { transform: scaleY(1) skewX(0deg); }
+        }
+      `}</style>
+
+      {/* Menu na posição original: some quando a barra fixa assume */}
+      <DesktopMenu
+        links={links}
+        pathname={pathname}
+        className="hidden min-[1301px]:flex min-[1301px]:flex-row min-[1301px]:gap-10 min-[1301px]:font-black min-[1301px]:text-[20px] text-white"
+        style={{
+          opacity: scrolled ? 0 : 1,
+          visibility: scrolled ? 'hidden' : 'visible',
+          transition: `opacity 200ms ease, visibility 0s linear ${scrolled ? '200ms' : '0s'}`,
+        }}
+      />
+
+      {/* Barra fixa (pílula) que aparece ao rolar e some ao voltar ao topo.
+          Vai para o <body> por um portal, assim nenhum container da página a prende. */}
+      {mounted &&
+        createPortal(
+          <div
+            aria-hidden={!scrolled}
+            className="fixed inset-x-0 top-4 z-50 hidden min-[1301px]:flex justify-center pointer-events-none"
+            style={{
+              transform: scrolled ? 'translateY(0)' : 'translateY(-140%)',
+              opacity: scrolled ? 1 : 0,
+              visibility: scrolled ? 'visible' : 'hidden',
+              transition: scrolled
+                ? 'transform 550ms cubic-bezier(.34,1.56,.64,1), opacity 250ms ease, visibility 0s'
+                : 'transform 300ms ease-in, opacity 250ms ease, visibility 0s linear 300ms',
+            }}
           >
-            <Link
-              href={link.href}
-              className="hover:text-[var(--hover-color)] transition-colors duration-200 block py-0"
+            <div
+              className="relative pointer-events-auto rounded-full"
+              style={{
+                padding: '12px 44px 18px',
+                background: 'rgba(52, 24, 56, 0.88)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '2px solid rgba(255,255,255,0.14)',
+                boxShadow: '0 10px 30px -8px rgba(40,10,40,0.5)',
+              }}
             >
-              {link.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+              {/* traços amarelos, como nas decorações do site */}
+              <svg
+                viewBox="0 0 40 24"
+                className="absolute -top-4 right-9 block w-9 h-5"
+                fill="none"
+                stroke="#ffc34d"
+                strokeWidth="4"
+                strokeLinecap="round"
+                aria-hidden
+              >
+                <path d="M7 20 3 12" />
+                <path d="M20 16V5" />
+                <path d="M33 20 37 12" />
+              </svg>
+
+              <DesktopMenu
+                links={links}
+                pathname={pathname}
+                className="flex flex-row gap-9 font-black text-[18px] text-white"
+              />
+            </div>
+          </div>,
+          document.body,
+        )}
 
       {/* 2. GAVETA MOBILE/TABLET (<= 1300px) */}
       <nav
