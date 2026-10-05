@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import PageLoader from "@/components/PageLoader";
 import { GoogleAnalytics } from "@next/third-parties/google"; 
 // import MetaPixel from "../components/MetaPixel";
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         O Next.js gerencia as fontes locais/externas direto no 'globals.css' ou via 'next/font'.
       */}
       <body className="min-h-full flex flex-col">
+        <PageLoader src="/loading.gif" width={180} />
         {children}
 
         {/* 4. Scripts inseridos de forma otimizada antes do fechamento do body */}
