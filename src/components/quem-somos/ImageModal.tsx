@@ -32,22 +32,42 @@ export default function ImageModal({ images, index, onClose, onChange }: Props) 
   );
 
   useEffect(() => {
-    if (!isOpen) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    closeRef.current?.focus();
+  if (!isOpen) return;
 
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') go(1);
-      if (e.key === 'ArrowLeft') go(-1);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [isOpen, onClose, go]);
+  // 1. Salva a posição exata atual do scroll da página
+  const scrollY = window.scrollY;
+  const previousOverflow = document.body.style.overflow;
+  const previousPaddingRight = document.body.style.paddingRight;
+
+  // 2. Calcula a largura da barra de rolagem para compensar o espaço dela
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+  // 3. Aplica as travas sem usar position: fixed (evita o pulo para o topo)
+  document.body.style.overflow = 'hidden';
+  if (scrollbarWidth > 0) {
+    // Adiciona um padding invisível idêntico ao tamanho da barra que sumiu
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+
+  closeRef.current?.focus();
+
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') onClose();
+    if (e.key === 'ArrowRight') go(1);
+    if (e.key === 'ArrowLeft') go(-1);
+  };
+  window.addEventListener('keydown', onKey);
+
+  return () => {
+    // 4. Restaura tudo exatamente como estava, na mesma altura
+    document.body.style.overflow = previousOverflow;
+    document.body.style.paddingRight = previousPaddingRight;
+    window.scrollTo(0, scrollY);
+    window.removeEventListener('keydown', onKey);
+  };
+}, [isOpen, onClose, go]);
+
+
 
   if (index === null) return null;
   const img = images[index];
@@ -58,7 +78,8 @@ export default function ImageModal({ images, index, onClose, onChange }: Props) 
       aria-modal="true"
       aria-label={img.alt}
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10"
-      style={{ background: 'rgba(128,44,106,.8)', backdropFilter: 'blur(6px)' }}
+      // style={{ background: 'rgba(128,44,106,.8)', backdropFilter: 'blur(6px)' }} esse era o antigo
+      style={{ background: 'rgba(8,8,8,.28)', backdropFilter: 'blur(6px)' }}
       onClick={onClose}
     >
       <div className="relative max-w-5xl" onClick={(e) => e.stopPropagation()}>

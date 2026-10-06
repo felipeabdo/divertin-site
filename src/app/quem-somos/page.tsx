@@ -1,12 +1,12 @@
-import type { Metadata } from 'next';
-import Footer from '@/components/Footer';
-import ClinicSection from '@/components/ClinicSection';
-import CtaSection from '@/components/CtaSection';
-import CuidarSection from '@/components/CuidarSection';
-import HeroSection from '@/components/HeroSection';
-import TeamSection from '@/components/TeamSection';
+import type { Metadata } from "next";
+import Footer from "@/components/Footer";
+import ClinicSection from "@/components/quem-somos/ClinicSection";
+import CtaSection from "@/components/quem-somos/CtaSection";
+import CuidarSection from "@/components/quem-somos/CuidarSection";
+import HeroSection from "@/components/quem-somos/HeroSection";
+import TeamSection from "@/components/quem-somos/TeamSection";
 
-export const metadata: Metadata = { title: 'Quem Somos | Divertin' };
+export const metadata: Metadata = { title: "Quem Somos | Divertin" };
 
 export default function QuemSomosPage() {
   return (

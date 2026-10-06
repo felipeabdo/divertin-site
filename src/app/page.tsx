@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Botao from '@/components/Botao';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
+import { CONTATO } from '@/data/contatoData';
 
 export default function Home() {
   return (
@@ -42,7 +43,7 @@ export default function Home() {
             </p>
             
             <div className="w-full sm:w-auto">
-              <Botao cor="rosinha">
+              <Botao cor="rosinha" href={CONTATO.whatsappUrl} target="_blank" rel="noreferrer">
                 Quero agendar uma avaliação <img src="/arrow_forward.svg" alt="Seta do botão" className='inline ml-2'/>
               </Botao>
             </div>
@@ -71,7 +72,7 @@ export default function Home() {
             <p className='font-semibold text-gray-800 text-base md:text-lg'>
               Na Divertin, realizamos avaliação, diagnóstico e intervenção especializada, com abordagem lúdica, empática e eficiente.
             </p>
-            <Botao cor='laranja_escuro'>
+            <Botao cor='laranja_escuro' href={CONTATO.whatsappUrl} target="_blank" rel="noreferrer">
               Quero agendar uma avaliação <img src="/arrow_forward.svg" alt="Seta do botão" className='inline ml-2'/>
             </Botao>
           </div>

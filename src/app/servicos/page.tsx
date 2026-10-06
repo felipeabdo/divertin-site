@@ -1,69 +1,57 @@
-import Link from 'next/link';
-import Botao from '@/components/Botao';
-import NavBar from '@/components/NavBar';
+import type { Metadata } from 'next';
+import Footer from '@/components/Footer';
+import Cloud from '@/components/quem-somos/Cloud';
+import ServiceCardGrid from '@/components/servicos/ServiceCardGrid';
+import ServiceHeader from '@/components/servicos/ServiceHeader';
+import ServicePrinciples from '@/components/servicos/ServicePrinciples';
+import SectionDashes from '@/components/servicos/SectionDashes';
+import { SERVICOS } from '@/data/servicosData';
 
-export default function Servicos() {
+export const metadata: Metadata = {
+  title: 'Especialidades | Divertin',
+  description:
+    'Conheça as especialidades da Clínica Divertin: Fonoaudiologia Infantil e Pediatria, com cuidado individualizado para crianças.',
+};
+
+export default function ServicosPage() {
   return (
-    <div className="overflow-x-hidden min-h-screen bg-white flex flex-col justify-between">
-      
-      {/* HEADER / NAVBAR (Ajustado para mostrar a logo no Desktop e no Mobile) */}
-      <header className="w-full px-6 flex justify-between items-center h-24 relative z-20 min-[1301px]:justify-center">
-        
-        {/* Logo Mobile / Tablet (< 1300px) */}
-        <div className="min-[1301px]:hidden mt-49">
-          <img src="/logo (1).png" alt="Logo Divertin" className="w-48 h-auto object-contain"/>
+    <div className="min-h-screen overflow-x-hidden bg-white">
+      <section className="relative min-h-[570px] overflow-hidden lg:min-h-[650px]">
+        <div aria-hidden className="absolute inset-0">
+          <div className="absolute -inset-6 bg-[url('/bg-hero.png')] bg-cover bg-top bg-no-repeat blur-md" />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(90deg, rgba(78,31,68,.94), rgba(214,132,191,.70) 56%, rgba(214,132,191,.35))',
+            }}
+          />
         </div>
 
-        {/* Logo Desktop (>= 1301px) - Posicionada de forma absoluta à esquerda do menu */}
-        <div className="hidden min-[1301px]:block absolute left-6 top-8">
-          <img src="/logo (1).png" alt="Logo Divertin" className="w-48 lg:w-60 h-auto object-contain"/>
+        <ServiceHeader />
+
+        <div className="relative z-10 mx-auto flex min-h-[570px] w-full max-w-6xl items-end px-6 pb-20 pt-32 lg:min-h-[650px] lg:pb-24">
+          <div className="max-w-3xl text-white">
+            <img
+              src="/logo (1).png"
+              alt="Logo Divertin"
+              className="mb-6 h-auto w-44 object-contain sm:w-52 lg:w-60"
+            />
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#FDD5A5]">Cuidado infantil especializado</p>
+            <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">Especialidades</h1>
+            <p className="mt-5 max-w-2xl text-base font-semibold leading-relaxed text-white/90 sm:text-lg">
+              Duas especialidades, um mesmo propósito: cuidar da criança de forma próxima, individualizada e conectada com a família.
+            </p>
+          </div>
         </div>
 
-        {/* Wrapper da NavBar */}
-        <div className="min-[1301px]:absolute min-[1301px]:left-1/2 min-[1301px]:-translate-x-1/2 min-[1301px]:top-8 ">
-          <NavBar />
-        </div>
-      </header>
+        <SectionDashes color="#FDD5A5" className="bottom-10 right-[8%] rotate-45" />
+        <Cloud position="bottom" />
+      </section>
 
-      {/* CONTEÚDO DA PÁGINA (4 Seções vazias prontas para uso) */}
-      <main className="w-full flex-grow">
-        
-        {/* SEÇÃO 1 */}
-        <section className="w-full max-w-7xl mx-auto px-6 py-12">
-          {/* Insira seu conteúdo aqui */}
-        </section>
-
-        {/* SEÇÃO 2 */}
-        <section className="w-full max-w-7xl mx-auto px-6 py-12">
-          {/* Insira seu conteúdo aqui */}
-        </section>
-
-        {/* SEÇÃO 3 */}
-        <section className="w-full max-w-7xl mx-auto px-6 py-12">
-          {/* Insira seu conteúdo aqui */}
-        </section>
-
-        {/* SEÇÃO 4 */}
-        <section className="w-full max-w-7xl mx-auto px-6 py-12">
-          {/* Insira seu conteúdo aqui */}
-        </section>
-
-      </main>
-
-      {/* FOOTER */}
-      <footer 
-        className="w-full relative mt-12 bg-top bg-repeat-x flex flex-col justify-center items-center pt-[150px] md:pt-[240px] pb-20 px-6" 
-        style={{ 
-          backgroundImage: `url('/cloud bottom.png')`, 
-          backgroundSize: 'cover' 
-        }}
-      >
-        <div className='w-full max-w-4xl mx-auto text-center font-medium text-xs md:text-sm text-gray-700 flex flex-col gap-2 relative z-10 mb-20'>
-          <p>© 2026 DIVERTIN - SRTVS Quadra 701, Centro Empresarial Multiempresarial, Bloco O, Sala 203 - Asa Sul, Brasília - DF</p>
-          <p>CEP: 70340-000 - Telefone: (61) 99500-5162 - CNPJ: 35.602.615/0001-72</p>
-        </div>
-      </footer>
-
+      <ServiceCardGrid services={SERVICOS} />
+      <ServicePrinciples />
+      <Footer />
     </div>
   );
 }

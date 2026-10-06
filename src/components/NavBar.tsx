@@ -658,7 +658,9 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
               className="relative pointer-events-auto rounded-full"
               style={{
                 padding: '12px 44px 18px',
-                background: 'rgba(52, 24, 56, 0.88)',
+                background: 'rgba(8, 8, 8, 0.28)', 
+                // background: 'rgba(52, 24, 56, 0.88)' - esse era o anterior
+                // background: 'rgba(8, 8, 8, 0.28)' - esse é o de agora
                 backdropFilter: 'blur(10px)',
                 WebkitBackdropFilter: 'blur(10px)',
                 border: '2px solid rgba(255,255,255,0.14)',

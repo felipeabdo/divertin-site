@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from 'react';
-import { Blob, Dashes } from './Decor';
-import ImageModal from './ImageModal';
-import Photo from './Photo';
-import { CLINIC_GALLERY, CLINIC_MAIN, H2, PAL, type ClinicPhoto } from './data';
+import { useCallback, useState } from "react";
+import { Blob, Dashes } from "./Decor";
+import ImageModal from "./ImageModal";
+import Photo from "./Photo";
+import { CLINIC_GALLERY, CLINIC_MAIN, H2, PAL, type ClinicPhoto } from "./data";
 
 /** Fotos que realmente existem (as sem `src` mostram só o placeholder e não abrem modal). */
 const VIEWABLE = [CLINIC_MAIN, ...CLINIC_GALLERY].filter(
@@ -22,16 +22,32 @@ export default function ClinicSection() {
 
   return (
     <section className="relative mx-auto mt-24 max-w-6xl px-6">
-      <Blob color={PAL.lime} radius="50% 50% 45% 55% / 55% 50% 50% 45%" className="-right-4 -top-4 hidden h-[64px] w-[58px] lg:block" />
-      <Blob color={PAL.greenSoft} radius="50%" className="-left-4 top-[300px] hidden h-[40px] w-[40px] lg:block" />
-      <Dashes color={PAL.green} className="-right-4 bottom-8 hidden lg:block" size={34} rotate={200} />
+      <Blob
+        color={PAL.lime}
+        radius="50% 50% 45% 55% / 55% 50% 50% 45%"
+        className="-right-4 -top-4 hidden h-[64px] w-[58px] lg:block"
+      />
+      <Blob
+        color={PAL.greenSoft}
+        radius="50%"
+        className="-left-4 top-[300px] hidden h-[40px] w-[40px] lg:block"
+      />
+      <Dashes
+        color={PAL.green}
+        className="-right-4 bottom-8 hidden lg:block"
+        size={34}
+        rotate={200}
+      />
 
       <div className="grid gap-8 lg:grid-cols-[1.25fr_1fr]">
         <div>
           <h2 className={H2}>A clínica</h2>
-          <p className="mt-1 text-xl font-semibold text-gray-700 md:text-2xl">Um espaço pensado para acolher</p>
+          <p className="mt-1 text-xl font-semibold text-gray-700 md:text-2xl">
+            Um espaço pensado para acolher
+          </p>
           <p className="mt-4 max-w-[420px] text-base leading-relaxed text-gray-600 md:text-lg">
-            Cada cantinho foi pensado para que crianças e famílias se sintam seguras, confortáveis e à vontade desde o primeiro encontro.
+            Cada cantinho foi pensado para que crianças e famílias se sintam
+            seguras, confortáveis e à vontade desde o primeiro encontro.
           </p>
           <Photo
             src={CLINIC_MAIN.src}
@@ -60,7 +76,12 @@ export default function ClinicSection() {
         </div>
       </div>
 
-      <ImageModal images={VIEWABLE} index={openIndex} onClose={close} onChange={setOpenIndex} />
+      <ImageModal
+        images={VIEWABLE}
+        index={openIndex}
+        onClose={close}
+        onChange={setOpenIndex}
+      />
     </section>
   );
 }

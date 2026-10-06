@@ -1,5 +1,4 @@
-// 1. Criamos um dicionário de cores usando as variáveis do nosso globals.css
-// Cada "chave" representa uma variante visual do botão
+// 1. Dicionário de cores das variantes do botão.
 const CORES_DISPONIVEIS = {
   rosinha: "bg-divertin-rosa-escuro text-white hover:bg-divertin-rosa-escuro/90",
   rosa: "bg-divertin-rosa text-white hover:bg-divertin-rosa/90",
@@ -9,26 +8,33 @@ const CORES_DISPONIVEIS = {
   laranja_escuro: "bg-divertin-laranja-escuro text-white hover:bg-divertin-laranja-escuro/90"
 };
 
-// 2. Definimos as Props (argumentos) que o nosso botão aceita.
-// Colocamos o "cor?: keyof typeof CORES_DISPONIVEIS" para o TypeScript garantir que 
-// só possamos digitar uma das 4 cores cadastradas ali em cima!
 interface BotaoProps {
   children: React.ReactNode;
-  cor?: keyof typeof CORES_DISPONIVEIS; // O "?" significa que essa prop é opcional
+  cor?: keyof typeof CORES_DISPONIVEIS;
+  href?: string;
+  target?: string;
+  rel?: string;
 }
 
-export default function Botao({ children, cor = "rosa" }: BotaoProps) {
-  // 3. A estrutura base do layout que NUNCA muda (paddings, arredondamento, sombras, clique)
-  const estiloBase = "max-w-[300px] px-6 py-6 font-bold rounded-full active:scale-95 transition-all text-left cursor-pointer shadow-sm flex justify-between md:px-6 md:py-6   ";
-
-  // 4. Buscamos as classes de cor específicas baseadas na Prop que foi passada.
-  // Se o desenvolvedor não passar nada, o sistema usa "rosa" como padrão (default).
+export default function Botao({
+  children,
+  cor = "rosa",
+  href,
+  target,
+  rel,
+}: BotaoProps) {
+  const estiloBase =
+    "max-w-[300px] px-6 py-6 font-bold rounded-full active:scale-95 transition-all text-left cursor-pointer shadow-sm flex justify-between md:px-6 md:py-6";
   const estiloCor = CORES_DISPONIVEIS[cor];
+  const className = `${estiloBase} ${estiloCor}`;
 
-  return (
-    // Combinamos a estrutura de base com a cor escolhida em uma linha só!
-    <button className={`${estiloBase} ${estiloCor}`}>
-      {children}
-    </button>
-  );
+  if (href) {
+    return (
+      <a href={href} target={target} rel={rel} className={className}>
+        {children}
+      </a>
+    );
+  }
+
+  return <button className={className}>{children}</button>;
 }
