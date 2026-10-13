@@ -1,5 +1,4 @@
 import SectionDashes from "./SectionDashes";
-import Cloud from "@/components/Cloud";
 
 const PRINCIPLES = [
   {

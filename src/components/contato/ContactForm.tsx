@@ -5,6 +5,7 @@ import type { FormEvent } from 'react';
 import { CONTATO } from '@/data/contatoData';
 import Arrow from '../quem-somos/Arrow';
 
+// Uma única constante descreve os campos e também permite limpar o formulário após o envio.
 const initialForm = {
   nome: '',
   email: '',
@@ -14,14 +15,17 @@ const initialForm = {
 };
 
 export default function ContactForm() {
+  // Estado dos campos controlados: o React é a fonte de verdade dos valores digitados.
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [feedback, setFeedback] = useState('');
 
+  // Atualiza apenas o campo alterado e preserva os valores dos outros campos.
   function updateField(field: keyof typeof initialForm, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
+  // Envia os dados ao Route Handler do Next.js sem recarregar a página.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus('sending');
@@ -76,6 +80,8 @@ export default function ContactForm() {
             <label className="text-sm font-bold text-gray-700">
               Nome
               <input
+                name="nome"
+                autoComplete="name"
                 required
                 value={form.nome}
                 onChange={(event) => updateField('nome', event.target.value)}
@@ -87,6 +93,8 @@ export default function ContactForm() {
             <label className="text-sm font-bold text-gray-700">
               E-mail
               <input
+                name="email"
+                autoComplete="email"
                 required
                 type="email"
                 value={form.email}
@@ -99,6 +107,8 @@ export default function ContactForm() {
             <label className="text-sm font-bold text-gray-700">
               Telefone / WhatsApp
               <input
+                name="telefone"
+                autoComplete="tel"
                 value={form.telefone}
                 onChange={(event) => updateField('telefone', event.target.value)}
                 className={`${inputClass} mt-2`}
@@ -109,6 +119,7 @@ export default function ContactForm() {
             <label className="text-sm font-bold text-gray-700">
               Assunto
               <input
+                name="assunto"
                 value={form.assunto}
                 onChange={(event) => updateField('assunto', event.target.value)}
                 className={`${inputClass} mt-2`}
@@ -120,6 +131,7 @@ export default function ContactForm() {
           <label className="mt-5 block text-sm font-bold text-gray-700">
             Mensagem
             <textarea
+              name="mensagem"
               required
               rows={6}
               value={form.mensagem}
@@ -151,7 +163,7 @@ export default function ContactForm() {
 
           {feedback && (
             <p
-              role="status"
+              role={status === 'error' ? 'alert' : 'status'}
               className={`mt-5 rounded-2xl px-4 py-3 text-sm font-semibold ${
                 status === 'success'
                   ? 'bg-[#E6F08F] text-gray-800'

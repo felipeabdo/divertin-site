@@ -25,7 +25,7 @@ export default function ImageModal({ images, index, onClose, onChange }: Props) 
 
   const go = useCallback(
     (dir: 1 | -1) => {
-      if (index === null) return;
+      if (index === null || total === 0) return;
       onChange((index + dir + total) % total);
     },
     [index, total, onChange],
@@ -71,6 +71,8 @@ export default function ImageModal({ images, index, onClose, onChange }: Props) 
 
   if (index === null) return null;
   const img = images[index];
+  // Se a galeria mudar enquanto o modal estiver aberto, evita acessar uma foto inexistente.
+  if (!img) return null;
 
   return (
     <div

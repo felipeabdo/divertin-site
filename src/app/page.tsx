@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Botao from '@/components/Botao';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';

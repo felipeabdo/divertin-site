@@ -62,11 +62,13 @@ export default function PageLoader({
   useEffect(() => {
     const startedAt = Date.now();
     let finished = false;
-    let minTimer: ReturnType<typeof setTimeout>;
-    let fadeTimer: ReturnType<typeof setTimeout>;
+    let disposed = false;
+    let minTimer: ReturnType<typeof setTimeout> | undefined;
+    let fadeTimer: ReturnType<typeof setTimeout> | undefined;
 
     const finish = () => {
-      if (finished) return;
+      // Promessas de fontes/imagens podem resolver depois que o componente desmontou.
+      if (finished || disposed) return;
       finished = true;
       const remaining = Math.max(0, minDuration - (Date.now() - startedAt));
       minTimer = setTimeout(() => {
@@ -115,9 +117,10 @@ export default function PageLoader({
 
     return () => {
       window.removeEventListener('load', onWindowLoad);
+      disposed = true;
       clearTimeout(safetyTimer);
-      clearTimeout(minTimer);
-      clearTimeout(fadeTimer);
+      if (minTimer) clearTimeout(minTimer);
+      if (fadeTimer) clearTimeout(fadeTimer);
     };
   }, [minDuration, fadeDuration, maxDuration]);
 

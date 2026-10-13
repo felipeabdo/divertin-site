@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function ServicosPage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-white">
-      <section className="relative min-h-[570px] overflow-hidden lg:min-h-[650px]">
+      <section className="relative min-h-[580px] overflow-hidden lg:min-h-[650px]">
         <div aria-hidden className="absolute inset-0">
           <div className="absolute -inset-6 bg-[url('/bg-hero.png')] bg-cover bg-top bg-no-repeat blur-md" />
           <div
@@ -30,7 +30,7 @@ export default function ServicosPage() {
 
         <ServiceHeader />
 
-        <div className="relative z-10 mx-auto flex min-h-[570px] w-full max-w-6xl items-end px-6 pb-20 pt-32 lg:min-h-[650px] lg:pb-24">
+        <div className="relative z-10 mx-auto flex min-h-[580px] w-full max-w-6xl items-end px-6 pb-20 pt-36 lg:min-h-[650px] lg:pb-24">
           <div className="max-w-3xl text-white">
             <img
               src="/logo (1).png"

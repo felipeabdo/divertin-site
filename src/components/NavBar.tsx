@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { CSSProperties, MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 
 type IconName = 'home' | 'face' | 'star' | 'chat';
@@ -253,7 +254,7 @@ interface DesktopMenuProps {
   links: NavLink[];
   pathname: string;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
 
 function DesktopMenu({ links, pathname, className = '', style }: DesktopMenuProps) {
@@ -270,21 +271,30 @@ function DesktopMenu({ links, pathname, className = '', style }: DesktopMenuProp
   const targetIndex = hoveredIndex ?? (activeIndex >= 0 ? activeIndex : null);
 
   useIsoLayoutEffect(() => {
+    let cancelled = false;
+
     const measure = () => {
+      // Fontes podem terminar de carregar depois da troca de item ou desmontagem.
+      if (cancelled) return;
       const el = targetIndex !== null ? itemRefs.current[targetIndex] : null;
       if (!el) return;
       setBrushRect({
         left: el.offsetLeft - BRUSH_OVERHANG,
-        // logo abaixo do texto (funciona com ou sem padding no container)
+        // Logo abaixo do texto (funciona com ou sem padding no container).
         top: el.offsetTop + el.offsetHeight - 1,
         width: el.offsetWidth + BRUSH_OVERHANG * 2,
       });
     };
+
     measure();
     window.addEventListener('resize', measure);
-    // recalcula quando a fonte customizada termina de carregar (muda a largura do texto)
+    // Recalcula quando a fonte customizada termina de carregar (muda a largura do texto).
     document.fonts?.ready.then(measure);
-    return () => window.removeEventListener('resize', measure);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('resize', measure);
+    };
   }, [targetIndex, links]);
 
   useEffect(() => {
@@ -429,7 +439,7 @@ export default function NavBar({ links = defaultLinks }: NavBarProps) {
   // Clique num link do menu:
   // - mesma página: fecha o menu na hora
   // - outra página: mantém o menu aberto até a rota mudar
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleLinkClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     // cliques com ctrl/cmd/shift (nova aba/janela) não devem prender o menu
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
 

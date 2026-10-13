@@ -168,15 +168,21 @@ export default function ScreenSaver({
       img.fetchPriority = 'low';
       img.src = src;
     };
-    const schedule = () => setTimeout(prefetch, 2000);
     let timer: ReturnType<typeof setTimeout> | undefined;
+    const schedule = () => {
+      timer = setTimeout(prefetch, 2000);
+    };
+    const onLoad = () => schedule();
+
     if (document.readyState === 'complete') {
-      timer = schedule();
+      schedule();
     } else {
-      window.addEventListener('load', () => (timer = schedule()), { once: true });
+      window.addEventListener('load', onLoad, { once: true });
     }
+
     return () => {
       cancelled = true;
+      window.removeEventListener('load', onLoad);
       if (timer) clearTimeout(timer);
     };
   }, [src]);

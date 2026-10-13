@@ -7,7 +7,7 @@ import { CONTATO } from "@/data/contatoData";
 
 export default function HeroSection() {
   return (
-    <section className="relative flex min-h-[640px] w-full flex-col lg:min-h-[740px]">
+    <section className="relative min-h-[580px] w-full overflow-hidden lg:min-h-[650px]">
       {/* fundo: a foto da home desfocada e tingida, para a Jéssica se destacar */}
       <div aria-hidden className="absolute inset-0 overflow-hidden">
         <div className="absolute -inset-6 bg-[url(/bg-hero.png)] bg-cover bg-top bg-no-repeat blur-md" />
@@ -15,7 +15,7 @@ export default function HeroSection() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(90deg, rgba(128,44,106,.9), rgba(214,132,191,.62) 55%, rgba(214,132,191,.35))",
+              "linear-gradient(90deg, rgba(78,31,68,.94), rgba(214,132,191,.70) 56%, rgba(214,132,191,.35))",
           }}
         />
       </div>
@@ -26,41 +26,41 @@ export default function HeroSection() {
         </div>
       </header>
 
-      <div className="relative z-[5] mx-auto grid w-full max-w-7xl flex-1 items-end gap-4 px-6 pt-10 lg:grid-cols-[1fr_auto] lg:gap-10 lg:pt-28">
-        <div className="max-w-[560px] pb-6 lg:pb-28">
+      <div className="relative mt-[-60] z-10 mx-auto grid min-h-[580px] w-full max-w-6xl grid-cols-1 items-end gap-4 px-6 pb-20 pt-36 lg:min-h-[650px] lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-8 lg:pb-24">
+        <div className="max-w-2xl pb-2 text-white lg:pb-0">
           <img
             src="/logo (1).png"
             alt="Logo Divertin"
-            className="mb-6 h-auto w-44 object-contain lg:w-60"
+            className="mb-6 h-auto w-44 object-contain sm:w-52 lg:w-60"
           />
-          <h1 className="font-avenir mb-3 text-[40px] font-black leading-tight text-white md:text-[52px] lg:text-[60px]">
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-[#FDD5A5]">
+            A clínica onde brincar também é cuidar
+          </p>
+          <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
             Quem Somos
           </h1>
-          <p className="font-avenir mb-4 text-[20px] font-bold leading-snug text-[#F18B1F] md:text-[24px]">
-            A clínica onde brincar também é cuidar.
-          </p>
-          <p className="font-avenir mb-6 text-[16px] font-semibold leading-relaxed text-white lg:text-lg">
+          <p className="mt-5 max-w-xl text-base font-semibold leading-relaxed text-white/90 sm:text-lg">
             A Divertin nasceu do desejo de tornar o cuidado infantil mais
             acolhedor, leve e significativo. Somos uma clínica de fonoaudiologia
             que acredita que cada criança tem seu próprio jeito de se comunicar,
             aprender e se desenvolver.
           </p>
-          <div className="w-full sm:w-auto">
+          <div className="mt-7 w-full sm:w-auto">
             <Botao
               cor="rosinha"
               href={CONTATO.whatsappUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noreferrer"              
             >
               Quero agendar uma avaliação <Arrow />
             </Botao>
           </div>
         </div>
 
-        <figure className="flex flex-col items-center pb-16 lg:flex-row lg:items-end lg:gap-8 lg:pb-0">
-          {/* Mobile/tablet: retrato em quadro arredondado, como as outras fotos da página */}
+        <figure className="relative flex items-end justify-center lg:h-[650px] lg:justify-end">
+          {/* Em telas menores, mantemos o retrato compacto para não competir com o texto. */}
           <div
-            className="relative aspect-square w-full max-w-[300px] overflow-hidden shadow-xl sm:max-w-[340px] lg:hidden"
+            className="relative mt-6 aspect-square w-full max-w-[240px] overflow-hidden shadow-xl sm:max-w-[280px] lg:hidden"
             style={{
               borderRadius: "70px 120px 80px 110px / 70px 90px 100px 80px",
             }}
@@ -72,20 +72,20 @@ export default function HeroSection() {
             />
           </div>
 
-          <figcaption className="font-avenir mt-4 text-center text-white lg:mt-0 lg:self-center lg:text-left">
-            <strong className="block whitespace-nowrap text-[22px] font-black leading-tight">
+          <figcaption className="mt-3 text-center text-white lg:absolute lg:bottom-8 lg:left-auto lg:right-[78%] lg:mt-0 lg:translate-x-0 lg:whitespace-nowrap lg:text-left">
+            <strong className="block text-xl font-black leading-tight sm:text-2xl">
               Jéssica Del Corso
             </strong>
-            <span className="text-base font-semibold text-white/90">
+            <span className="text-sm font-semibold text-white/90 sm:text-base">
               CEO e fundadora
             </span>
           </figcaption>
 
-          {/* Desktop: corpo inteiro, 800px de altura */}
+          {/* A imagem de corpo inteiro fica limitada à mesma altura da hero em desktop. */}
           <img
             src="/jessica-full.png"
             alt="Jéssica Del Corso, CEO e fundadora"
-            className="hidden h-[800px] w-auto max-w-none object-contain object-bottom drop-shadow-[0_14px_22px_rgba(0,0,0,.28)] lg:block"
+            className="hidden h-full w-auto max-w-none object-contain object-bottom drop-shadow-[0_14px_22px_rgba(0,0,0,.28)] lg:block"
           />
         </figure>
       </div>

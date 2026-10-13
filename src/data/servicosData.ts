@@ -1,7 +1,7 @@
 /**
  * Catálogo das especialidades da Divertin.
  *
- * A ideia é que, por enquanto, este arquivo funcione como nossa "fonte de dados".
+ * Este arquivo é a fonte de dados estática das páginas de especialidades.
  * Para adicionar uma nova especialidade, basta incluir outro objeto em SERVICOS.
  * Futuramente, esse mesmo formato pode vir de uma API/banco sem mudar a estrutura das páginas.
  */
