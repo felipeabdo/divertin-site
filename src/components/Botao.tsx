@@ -14,6 +14,8 @@ interface BotaoProps {
   href?: string;
   target?: string;
   rel?: string;
+  largura?: string;
+  altura?: string;
 }
 
 export default function Botao({
@@ -22,19 +24,37 @@ export default function Botao({
   href,
   target,
   rel,
+  largura = "305px",
+  altura = "70px",
 }: BotaoProps) {
-  const estiloBase =
-    "max-w-[300px] px-6 py-6 font-bold rounded-full active:scale-95 transition-all text-left cursor-pointer shadow-sm flex justify-between md:px-6 md:py-6";
+  const estiloBase = "px-6 py-6 font-bold rounded-full active:scale-95 transition-all text-left cursor-pointer shadow-sm flex items-center justify-start gap-2 md:px-6 md:py-6";
+
   const estiloCor = CORES_DISPONIVEIS[cor];
+
   const className = `${estiloBase} ${estiloCor}`;
+
+  const estiloDimensoes = {
+    width: largura,
+    ...(altura ? { height: altura } : {}),
+  };
 
   if (href) {
     return (
-      <a href={href} target={target} rel={rel} className={className}>
+      <a
+        href={href}
+        target={target}
+        rel={rel}
+        className={className}
+        style={estiloDimensoes}
+      >
         {children}
       </a>
     );
   }
 
-  return <button className={className}>{children}</button>;
+  return (
+    <button className={className} style={estiloDimensoes}>
+      {children}
+    </button>
+  );
 }

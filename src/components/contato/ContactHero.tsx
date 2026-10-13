@@ -1,7 +1,8 @@
-import Botao from '@/components/Botao';
-import NavBar from '@/components/NavBar';
-import Cloud from '@/components/quem-somos/Cloud';
-import { CONTATO } from '@/data/contatoData';
+import Botao from "@/components/Botao";
+import NavBar from "@/components/NavBar";
+import Cloud from "@/components/Cloud";
+import { CONTATO } from "@/data/contatoData";
+import Arrow from "../quem-somos/Arrow";
 
 export default function ContactHero() {
   return (
@@ -12,7 +13,7 @@ export default function ContactHero() {
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(90deg, rgba(78,31,68,.94), rgba(214,132,191,.68) 58%, rgba(214,132,191,.35))',
+              "linear-gradient(90deg, rgba(78,31,68,.94), rgba(214,132,191,.68) 58%, rgba(214,132,191,.35))",
           }}
         />
       </div>
@@ -37,7 +38,8 @@ export default function ContactHero() {
             Vamos conversar?
           </h1>
           <p className="mt-5 max-w-xl text-base font-semibold leading-relaxed text-white/90 sm:text-lg">
-            Tire suas dúvidas, agende uma avaliação e fale diretamente com a equipe da Divertin.
+            Tire suas dúvidas, agende uma avaliação e fale diretamente com a
+            equipe da Divertin.
           </p>
           <div className="mt-7">
             <Botao
@@ -45,8 +47,9 @@ export default function ContactHero() {
               href={CONTATO.whatsappUrl}
               target="_blank"
               rel="noreferrer"
+              largura="240px"
             >
-              Falar pelo WhatsApp <span aria-hidden>→</span>
+              Falar pelo WhatsApp <Arrow />
             </Botao>
           </div>
         </div>
@@ -59,7 +62,7 @@ export default function ContactHero() {
         className="pointer-events-none absolute bottom-[7%] right-[4%] z-[6] hidden w-[220px] drop-shadow-[0_16px_24px_rgba(0,0,0,.22)] lg:block xl:w-[280px]"
       />
 
-      <Cloud position="bottom" />
+      <Cloud position="bottom" imageUrl="/cloud (6).png" />
     </section>
   );
 }

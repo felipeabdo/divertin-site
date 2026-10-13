@@ -1,5 +1,6 @@
 import Botao from '@/components/Botao';
 import { CONTATO } from '@/data/contatoData';
+import Arrow from '../quem-somos/Arrow';
 
 export default function WhatsAppCard() {
   return (
@@ -15,12 +16,14 @@ export default function WhatsAppCard() {
       </p>
       <div className="mt-6">
         <Botao
+          largura="205px"
           cor="laranja_escuro"
           href={CONTATO.whatsappUrl}
           target="_blank"
           rel="noreferrer"
+          
         >
-          Abrir WhatsApp <span aria-hidden>→</span>
+          Abrir WhatsApp <Arrow />
         </Botao>
       </div>
       <p className="mt-5 text-sm font-bold text-gray-700">{CONTATO.phoneDisplay}</p>

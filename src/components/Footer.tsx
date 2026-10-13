@@ -2,7 +2,7 @@ import { CONTATO } from '@/data/contatoData';
 export default function Footer() {
   return (
     <footer 
-      className="w-full relative mt-12 bg-top bg-repeat-x flex flex-col justify-center items-center pt-[150px] md:pt-[240px] pb-20 px-6" 
+      className="w-full relative mt-[-45] bg-top bg-repeat-x flex flex-col justify-center items-center pt-[150px] md:pt-[240px] pb-20 px-6" 
       style={{ 
         backgroundImage: `url('/cloud bottom.png')`, 
         backgroundSize: 'cover' 

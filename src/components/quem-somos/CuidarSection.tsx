@@ -1,4 +1,4 @@
-import Cloud from "./Cloud";
+import Cloud from "../Cloud";
 import { Dashes } from "./Decor";
 import PlayIllustration from "./PlayIllustration";
 import { H2, PAL } from "./data";

@@ -1,16 +1,16 @@
-import type { Metadata } from 'next';
-import Footer from '@/components/Footer';
-import Cloud from '@/components/quem-somos/Cloud';
-import ContactForm from '@/components/contato/ContactForm';
-import ContactHero from '@/components/contato/ContactHero';
-import HoursCard from '@/components/contato/HoursCard';
-import LocationSection from '@/components/contato/LocationSection';
-import WhatsAppCard from '@/components/contato/WhatsAppCard';
+import type { Metadata } from "next";
+import Footer from "@/components/Footer";
+import Cloud from "@/components/Cloud";
+import ContactForm from "@/components/contato/ContactForm";
+import ContactHero from "@/components/contato/ContactHero";
+import HoursCard from "@/components/contato/HoursCard";
+import LocationSection from "@/components/contato/LocationSection";
+import WhatsAppCard from "@/components/contato/WhatsAppCard";
 
 export const metadata: Metadata = {
-  title: 'Contato | Divertin',
+  title: "Contato | Divertin",
   description:
-    'Entre em contato com a Clínica Divertin, veja nosso horário de atendimento e encontre nossa localização na Asa Sul, em Brasília.',
+    "Entre em contato com a Clínica Divertin, veja nosso horário de atendimento e encontre nossa localização na Asa Sul, em Brasília.",
 };
 
 export default function ContatoPage() {
@@ -23,7 +23,7 @@ export default function ContatoPage() {
           <WhatsAppCard />
           <HoursCard />
         </div>
-        <Cloud position="bottom" />
+        <Cloud position="bottom"/>
       </section>
 
       <LocationSection />

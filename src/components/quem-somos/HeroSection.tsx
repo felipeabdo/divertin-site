@@ -1,9 +1,9 @@
 import Botao from "@/components/Botao";
 import NavBar from "@/components/NavBar";
 import Arrow from "./Arrow";
-import Cloud from "./Cloud";
+import Cloud from "../Cloud";
 import { PAL } from "./data";
-import { CONTATO } from '@/data/contatoData';
+import { CONTATO } from "@/data/contatoData";
 
 export default function HeroSection() {
   return (
@@ -46,7 +46,12 @@ export default function HeroSection() {
             aprender e se desenvolver.
           </p>
           <div className="w-full sm:w-auto">
-            <Botao cor="rosinha" href={CONTATO.whatsappUrl} target="_blank" rel="noreferrer">
+            <Botao
+              cor="rosinha"
+              href={CONTATO.whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
               Quero agendar uma avaliação <Arrow />
             </Botao>
           </div>

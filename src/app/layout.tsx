@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         O Next.js gerencia as fontes locais/externas direto no 'globals.css' ou via 'next/font'.
       */}
       <body className="min-h-full flex flex-col">
-        <PageLoader src="/loading.gif" width={180} />
+        {/* <PageLoader src="/loading.gif" width={180} /> */}
         <ScreenSaver src="/descanso.gif" idleMinutes={0.5} width={220} />
         {children}
 

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { CONTATO } from '@/data/contatoData';
+import Arrow from '../quem-somos/Arrow';
 
 const initialForm = {
   nome: '',
@@ -137,7 +138,14 @@ export default function ContactForm() {
               disabled={status === 'sending'}
               className="rounded-full bg-[#FC5D00] px-7 py-4 text-sm font-black text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {status === 'sending' ? 'Enviando...' : 'Enviar mensagem →'}
+              {status === 'sending' ? (
+                'Enviando...'
+              ) : (
+                <>
+                  Enviar mensagem
+                  <Arrow />
+                </>
+              )}
             </button>
           </div>
 

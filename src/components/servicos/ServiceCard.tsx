@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Service } from '@/data/servicosData';
+import Arrow from '../quem-somos/Arrow';
 
 export default function ServiceCard({ service }: { service: Service }) {
   return (
@@ -30,7 +31,7 @@ export default function ServiceCard({ service }: { service: Service }) {
             className="inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: service.accent }}
           >
-            Conhecer <span aria-hidden>→</span>
+            Conhecer <Arrow />
           </Link>
         </div>
       </div>

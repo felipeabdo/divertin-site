@@ -1,16 +1,16 @@
-import type { Metadata } from 'next';
-import Footer from '@/components/Footer';
-import Cloud from '@/components/quem-somos/Cloud';
-import ServiceCardGrid from '@/components/servicos/ServiceCardGrid';
-import ServiceHeader from '@/components/servicos/ServiceHeader';
-import ServicePrinciples from '@/components/servicos/ServicePrinciples';
-import SectionDashes from '@/components/servicos/SectionDashes';
-import { SERVICOS } from '@/data/servicosData';
+import type { Metadata } from "next";
+import Footer from "@/components/Footer";
+import Cloud from "@/components/Cloud";
+import ServiceCardGrid from "@/components/servicos/ServiceCardGrid";
+import ServiceHeader from "@/components/servicos/ServiceHeader";
+import ServicePrinciples from "@/components/servicos/ServicePrinciples";
+import SectionDashes from "@/components/servicos/SectionDashes";
+import { SERVICOS } from "@/data/servicosData";
 
 export const metadata: Metadata = {
-  title: 'Especialidades | Divertin',
+  title: "Especialidades | Divertin",
   description:
-    'Conheça as especialidades da Clínica Divertin: Fonoaudiologia Infantil e Pediatria, com cuidado individualizado para crianças.',
+    "Conheça as especialidades da Clínica Divertin: Fonoaudiologia Infantil e Pediatria, com cuidado individualizado para crianças.",
 };
 
 export default function ServicosPage() {
@@ -23,7 +23,7 @@ export default function ServicosPage() {
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(90deg, rgba(78,31,68,.94), rgba(214,132,191,.70) 56%, rgba(214,132,191,.35))',
+                "linear-gradient(90deg, rgba(78,31,68,.94), rgba(214,132,191,.70) 56%, rgba(214,132,191,.35))",
             }}
           />
         </div>
@@ -37,15 +37,23 @@ export default function ServicosPage() {
               alt="Logo Divertin"
               className="mb-6 h-auto w-44 object-contain sm:w-52 lg:w-60"
             />
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#FDD5A5]">Cuidado infantil especializado</p>
-            <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">Especialidades</h1>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#FDD5A5]">
+              Cuidado infantil especializado
+            </p>
+            <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
+              Especialidades
+            </h1>
             <p className="mt-5 max-w-2xl text-base font-semibold leading-relaxed text-white/90 sm:text-lg">
-              Duas especialidades, um mesmo propósito: cuidar da criança de forma próxima, individualizada e conectada com a família.
+              Duas especialidades, um mesmo propósito: cuidar da criança de
+              forma próxima, individualizada e conectada com a família.
             </p>
           </div>
         </div>
 
-        <SectionDashes color="#FDD5A5" className="bottom-10 right-[8%] rotate-45" />
+        <SectionDashes
+          color="#FDD5A5"
+          className="bottom-10 right-[8%] rotate-45"
+        />
         <Cloud position="bottom" />
       </section>
 

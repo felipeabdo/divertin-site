@@ -1,4 +1,5 @@
 import { CONTATO } from '@/data/contatoData';
+import Arrow from '../quem-somos/Arrow';
 
 const mapQuery = encodeURIComponent(`Clínica Divertin, ${CONTATO.address}`);
 const mapUrl = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
@@ -23,9 +24,9 @@ export default function LocationSection() {
               href={CONTATO.routeUrl}
               target="_blank"
               rel="noreferrer"
-              className="mt-6 inline-flex items-center rounded-full bg-[#D95F80] px-6 py-4 text-sm font-black text-white transition hover:opacity-90"
+              className="mt-6 inline-flex items-center rounded-full bg-[#D95F80] px-6 py-6 text-sm font-black text-white transition hover:opacity-90"
             >
-              Abrir rota no Google Maps <span aria-hidden className="ml-2">→</span>
+              Abrir rota no Google Maps <Arrow />
             </a>
           </div>
         </div>
